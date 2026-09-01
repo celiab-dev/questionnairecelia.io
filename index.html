@@ -281,8 +281,16 @@
     try {
       const payload = Object.assign({}, answers, { submitted_at: new Date().toISOString() });
       const key = 'response_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-      const result = await window.storage.set(key, JSON.stringify(payload), true);
-      if (!result) throw new Error('no result');
+      const getRes = await fetch(BIN_URL + "/latest", { headers: { "X-Master-Key": API_KEY } });
+      const data = await getRes.json();
+      const current = data.record?.responses || [];
+current.push(payload);
+const putRes = await fetch(BIN_URL, {
+  method: "PUT",
+  headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
+  body: JSON.stringify({ responses: current })
+});
+if (!putRes.ok) throw new Error('send failed');
       submitting = false;
       step = STEPS.length - 1;
       render();
@@ -293,25 +301,18 @@
     }
   }
 
-  async function loadResults() {
-    const container = document.getElementById('q-results-panel');
-    if (!container) return;
-    container.innerHTML = '<p style="font-size:13px;color:var(--muted);">Loading…</p>';
-    try {
-      const listRes = await window.storage.list('response_', true);
-      const keys = (listRes && listRes.keys) || [];
-      const responses = [];
-      for (const k of keys) {
-        try {
-          const r = await window.storage.get(k, true);
-          if (r) responses.push(JSON.parse(r.value));
-        } catch (e) { /* skip unreadable entry */ }
-      }
-      renderResults(container, responses);
-    } catch (e) {
-      container.innerHTML = '<p class="q-error">Could not load the responses.</p>';
-    }
+ async function loadResults() {
+  const container = document.getElementById('q-results-panel');
+  if (!container) return;
+  container.innerHTML = '<p style="font-size:13px;color:var(--muted)">Loading</p>';
+  try {
+    const res = await fetch(BIN_URL + "/latest", { headers: { "X-Master-Key": API_KEY } });
+    const data = await res.json();
+    renderResults(container, data.record?.responses || []);
+  } catch (e) {
+    container.innerHTML = '<p class="q-error">Could not load the responses.</p>';
   }
+}
 
   function renderResults(container, responses) {
     const likertIds = ['C1', 'C2', 'C3', 'D1', 'D2', 'D3', 'E1', 'E2', 'E3', 'F1', 'F2', 'F3'];
