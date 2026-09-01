@@ -1,1 +1,449 @@
-# questionnairecelia.io
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #16263A;
+    --navy-soft: #2C4258;
+    --gold: #B08D3E;
+    --gold-soft: #E9DCB8;
+    --paper: #FAF8F3;
+    --line: #DDD6C4;
+    --ink: #23303B;
+    --muted: #6B7480;
+  }
+  * { box-sizing: border-box; }
+  #q-root {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .q-header {
+    background: var(--navy);
+    color: var(--paper);
+    padding: 28px 32px 22px;
+    position: relative;
+  }
+  .q-header h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 24px;
+    margin: 0 0 6px;
+    letter-spacing: 0.2px;
+  }
+  .q-header p {
+    margin: 0;
+    font-size: 13.5px;
+    color: #C9D2DB;
+    line-height: 1.5;
+  }
+  .q-progress-track {
+    height: 3px;
+    background: rgba(255,255,255,0.15);
+    margin-top: 18px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .q-progress-fill {
+    height: 100%;
+    background: var(--gold);
+    transition: width 0.35s ease;
+  }
+  .q-body {
+    padding: 32px;
+    min-height: 260px;
+  }
+  .q-step-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .q-step-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0 0 18px;
+    color: var(--navy);
+  }
+  .q-field { margin-bottom: 22px; }
+  .q-field label.q-q {
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .q-options { display: flex; flex-wrap: wrap; gap: 8px; }
+  .q-opt {
+    border: 1px solid var(--line);
+    background: #fff;
+    padding: 9px 14px;
+    border-radius: 3px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .q-opt:hover { border-color: var(--gold); }
+  .q-opt.selected {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+  }
+  .q-text-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    font-family: inherit;
+    font-size: 14px;
+    background: #fff;
+  }
+  .q-text-input:focus { outline: 2px solid var(--gold-soft); border-color: var(--gold); }
+  textarea.q-text-input { resize: vertical; min-height: 90px; }
+
+  .q-likert-item { margin-bottom: 20px; }
+  .q-likert-statement { font-size: 14.5px; margin-bottom: 10px; line-height: 1.4; }
+  .q-likert-scale {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .q-likert-btn {
+    flex: 1;
+    text-align: center;
+    padding: 10px 4px 8px;
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11.5px;
+    color: var(--muted);
+    min-height: 44px;
+  }
+  .q-likert-btn .num {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    color: var(--navy);
+    margin-bottom: 2px;
+  }
+  .q-likert-btn.selected {
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+  .q-likert-btn.selected .num, .q-likert-btn.selected { color: #fff; }
+
+  .q-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 32px 26px;
+    border-top: 1px solid var(--line);
+  }
+  .q-btn {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 22px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: none;
+  }
+  .q-btn-primary { background: var(--navy); color: #fff; }
+  .q-btn-primary:disabled { background: #B7C0C8; cursor: not-allowed; }
+  .q-btn-ghost { background: transparent; color: var(--muted); }
+  .q-btn-ghost:disabled { visibility: hidden; }
+
+  .q-consent {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    border: 1px solid var(--line);
+    background: #fff;
+    padding: 14px 16px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .q-consent input { margin-top: 3px; }
+  .q-consent span { font-size: 13.5px; line-height: 1.5; }
+
+  .q-thanks { text-align: center; padding: 20px 0 10px; }
+  .q-thanks h2 { font-family: 'Fraunces', serif; font-weight: 500; color: var(--navy); font-size: 22px; }
+  .q-thanks p { color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 420px; margin: 10px auto 0; }
+
+  .q-toggle-results {
+    background: none; border: none; color: #C9D2DB; font-size: 12px;
+    position: absolute; top: 28px; right: 32px; cursor: pointer; text-decoration: underline;
+  }
+  .q-results-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+  .q-results-table th, .q-results-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  .q-results-table th { color: var(--muted); font-weight: 500; }
+  .q-bar-bg { background: #EDE9DD; border-radius: 2px; height: 6px; width: 100%; }
+  .q-bar-fill { background: var(--gold); height: 6px; border-radius: 2px; }
+  .q-error { color: #A5442A; font-size: 13px; margin-top: 8px; }
+</style>
+
+<div id="q-root"></div>
+
+<script>
+(function () {
+  const root = document.getElementById('q-root');
+
+  const LIKERT_SHORT = ["Disagree", "", "Neutral", "", "Agree"];
+
+  const STEPS = [
+    { type: 'intro' },
+    {
+      type: 'form', label: 'Section A', title: 'Profile', fields: [
+        { id: 'age', q: `1. Age group`, type: 'choice', options: ['18–24', '25–34', '35–44', '45–54', '55+'] },
+        { id: 'gender', q: `2. Gender`, type: 'choice', options: ['Female', 'Male', 'Prefer not to say', 'Other'] },
+        { id: 'experience', q: `3. How long have you been investing (stocks, ETFs, crypto)?`, type: 'choice', options: ['Less than 1 year', '1 to 3 years', 'More than 3 years'] },
+        { id: 'platforms', q: `4. Which app(s) do you mainly use to invest?`, type: 'text', placeholder: 'e.g. Trade Republic, eToro, Revolut...' }
+      ]
+    },
+    {
+      type: 'form', label: 'Section B', title: 'Trading behaviour', fields: [
+        { id: 'frequency', q: `5. On average, how often do you buy or sell an investment?`, type: 'choice', options: ['Several times a week', 'Weekly', 'Monthly', 'A few times a year', 'Rarely'] },
+        { id: 'notifications', q: `6. Do you receive push notifications, price alerts, or "trending" rankings from your app?`, type: 'choice', options: ['Yes, often', 'Yes, sometimes', 'No', 'Not sure'] }
+      ]
+    },
+    {
+      type: 'likert', label: 'Section C', title: 'Overconfidence', items: [
+        { id: 'C1', q: `I am confident in my ability to pick investments that will outperform the market.` },
+        { id: 'C2', q: `I trade more often after I have made a successful investment.` },
+        { id: 'C3', q: `I believe I understand the market better than the average investor.` }
+      ]
+    },
+    {
+      type: 'likert', label: 'Section D', title: 'Herding and social influence', items: [
+        { id: 'D1', q: `I am more likely to invest in a stock if I see it being widely discussed online or on social media.` },
+        { id: 'D2', q: `I feel reassured when I see that many other people are buying the same investment as me.` },
+        { id: 'D3', q: `I have bought an investment mainly because it was trending or recommended by an influencer.` }
+      ]
+    },
+    {
+      type: 'likert', label: 'Section E', title: 'Disposition effect and mental accounting', items: [
+        { id: 'E1', q: `I tend to sell an investment quickly once it has gained value, to lock in the profit.` },
+        { id: 'E2', q: `I tend to hold on to a losing investment, hoping it will recover, rather than sell it.` },
+        { id: 'E3', q: `I evaluate each of my investments separately rather than looking at my overall portfolio performance.` }
+      ]
+    },
+    {
+      type: 'likert', label: 'Section F', title: 'Financial literacy and platform design', items: [
+        { id: 'F1', q: `I feel I have sufficient knowledge to evaluate the risk of an investment before buying it.` },
+        { id: 'F2', q: `Features of my trading app, such as graphics, badges, rankings, or notifications, make investing feel exciting or game-like.` },
+        { id: 'F3', q: `I sometimes make investment decisions quickly, without doing much research, because the app makes it easy to do so.` }
+      ]
+    },
+    {
+      type: 'form', label: 'Section G', title: 'Open question', fields: [
+        { id: 'open', q: `7. In your own words, what is the main factor that influences your investment decisions? For example: news, personal research, friends, social media, or gut feeling.`, type: 'textarea' }
+      ]
+    },
+    { type: 'thanks' }
+  ];
+
+  let step = 0;
+  let answers = {};
+  let submitting = false;
+  let submitError = '';
+  let showResults = false;
+
+  function isStepValid(s) {
+    const st = STEPS[s];
+    if (st.type === 'intro') return answers.consent === true;
+    if (st.type === 'form') {
+      return st.fields.every(f => {
+        if (f.id === 'open') return true;
+        if (f.id === 'platforms') return true;
+        return answers[f.id] !== undefined && answers[f.id] !== '';
+      });
+    }
+    if (st.type === 'likert') {
+      return st.items.every(it => answers[it.id] !== undefined);
+    }
+    return true;
+  }
+
+  async function submitResponse() {
+    submitting = true;
+    render();
+    try {
+      const payload = Object.assign({}, answers, { submitted_at: new Date().toISOString() });
+      const key = 'response_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+      const result = await window.storage.set(key, JSON.stringify(payload), true);
+      if (!result) throw new Error('no result');
+      submitting = false;
+      step = STEPS.length - 1;
+      render();
+    } catch (e) {
+      submitting = false;
+      submitError = 'Something went wrong while sending your answers. Please check your connection and try again.';
+      render();
+    }
+  }
+
+  async function loadResults() {
+    const container = document.getElementById('q-results-panel');
+    if (!container) return;
+    container.innerHTML = '<p style="font-size:13px;color:var(--muted);">Loading…</p>';
+    try {
+      const listRes = await window.storage.list('response_', true);
+      const keys = (listRes && listRes.keys) || [];
+      const responses = [];
+      for (const k of keys) {
+        try {
+          const r = await window.storage.get(k, true);
+          if (r) responses.push(JSON.parse(r.value));
+        } catch (e) { /* skip unreadable entry */ }
+      }
+      renderResults(container, responses);
+    } catch (e) {
+      container.innerHTML = '<p class="q-error">Could not load the responses.</p>';
+    }
+  }
+
+  function renderResults(container, responses) {
+    const likertIds = ['C1', 'C2', 'C3', 'D1', 'D2', 'D3', 'E1', 'E2', 'E3', 'F1', 'F2', 'F3'];
+    let html = '<p style="font-size:13px;color:var(--muted);margin-bottom:10px;">' + responses.length + ' response(s) received</p>';
+    html += '<table class="q-results-table"><thead><tr><th>Item</th><th>Average</th><th></th></tr></thead><tbody>';
+    likertIds.forEach(id => {
+      const vals = responses.map(r => r[id]).filter(v => typeof v === 'number');
+      const avg = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length) : null;
+      html += '<tr><td>' + id + '</td><td>' + (avg !== null ? avg.toFixed(2) : '—') + '</td>' +
+        '<td style="width:120px;"><div class="q-bar-bg"><div class="q-bar-fill" style="width:' + (avg !== null ? (avg / 5 * 100) : 0) + '%;"></div></div></td></tr>';
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  }
+
+  function escapeAttr(str) {
+    return String(str).replace(/"/g, '&quot;');
+  }
+
+  function choiceField(f) {
+    const val = answers[f.id];
+    const options = f.options.map(o =>
+      '<div class="q-opt' + (val === o ? ' selected' : '') + '" data-value="' + escapeAttr(o) + '">' + o + '</div>'
+    ).join('');
+    return '<div class="q-field"><label class="q-q">' + f.q + '</label><div class="q-options" data-field="' + f.id + '">' + options + '</div></div>';
+  }
+
+  function textField(f) {
+    const val = answers[f.id] || '';
+    if (f.type === 'textarea') {
+      return '<div class="q-field"><label class="q-q">' + f.q + '</label><textarea class="q-text-input" data-field="' + f.id + '" placeholder="' + escapeAttr(f.placeholder || '') + '">' + val + '</textarea></div>';
+    }
+    return '<div class="q-field"><label class="q-q">' + f.q + '</label><input class="q-text-input" data-field="' + f.id + '" type="text" placeholder="' + escapeAttr(f.placeholder || '') + '" value="' + escapeAttr(val) + '"/></div>';
+  }
+
+  function likertItem(it) {
+    const val = answers[it.id];
+    const buttons = [1, 2, 3, 4, 5].map(n =>
+      '<div class="q-likert-btn' + (val === n ? ' selected' : '') + '" data-value="' + n + '"><span class="num">' + n + '</span>' + LIKERT_SHORT[n - 1] + '</div>'
+    ).join('');
+    return '<div class="q-likert-item"><div class="q-likert-statement">' + it.q + '</div><div class="q-likert-scale" data-field="' + it.id + '">' + buttons + '</div></div>';
+  }
+
+  function render() {
+    const st = STEPS[step];
+    const progress = Math.round((step / (STEPS.length - 1)) * 100);
+    let bodyHtml = '';
+
+    if (st.type === 'intro') {
+      bodyHtml = '<div class="q-step-title">Welcome</div>' +
+        '<p style="font-size:14px;line-height:1.6;color:var(--ink);">Thank you for taking part in this short pilot study, conducted as part of a Master\u2019s dissertation at KEDGE Business School on behavioural biases among retail investors who use trading apps. It takes about 5 minutes to complete.</p>' +
+        '<p style="font-size:13px;line-height:1.6;color:var(--muted);">Your answers are anonymous and will only be used for academic purposes, in aggregated form.</p>' +
+        '<label class="q-consent" style="margin-top:14px;"><input type="checkbox" id="q-consent-box" ' + (answers.consent ? 'checked' : '') + '/><span>I confirm that I am 18 years or older and I agree to take part in this study.</span></label>';
+    } else if (st.type === 'form') {
+      bodyHtml = '<div class="q-step-label">' + st.label + '</div><div class="q-step-title">' + st.title + '</div>' +
+        st.fields.map(f => f.type === 'choice' ? choiceField(f) : textField(f)).join('');
+    } else if (st.type === 'likert') {
+      bodyHtml = '<div class="q-step-label">' + st.label + '</div><div class="q-step-title">' + st.title + '</div>' +
+        '<p style="font-size:13px;color:var(--muted);margin-top:-10px;margin-bottom:16px;">Please indicate how much you agree with each statement.</p>' +
+        st.items.map(likertItem).join('');
+    } else if (st.type === 'thanks') {
+      bodyHtml = '<div class="q-thanks"><h2>Thank you!</h2><p>Your response has been recorded. It directly contributes to this pilot study on behavioural biases among novice retail investors.</p></div>';
+    }
+
+    if (submitError) bodyHtml += '<p class="q-error">' + submitError + '</p>';
+
+    const isLastQuestionStep = step === STEPS.length - 2 && STEPS[STEPS.length - 1].type === 'thanks';
+    const isThanks = st.type === 'thanks';
+    const valid = isStepValid(step);
+
+    root.innerHTML =
+      '<div class="q-header">' +
+      (!isThanks ? '<button class="q-toggle-results" id="q-toggle-results-btn">' + (showResults ? 'Close' : 'View responses') + '</button>' : '') +
+      '<h1>Pilot Study \u2014 Behavioural Biases</h1>' +
+      '<p>Novice retail investors and trading apps</p>' +
+      (!isThanks ? '<div class="q-progress-track"><div class="q-progress-fill" style="width:' + progress + '%;"></div></div>' : '') +
+      '</div>' +
+      '<div class="q-body">' + bodyHtml +
+      (showResults && !isThanks ? '<div id="q-results-panel" style="margin-top:22px;border-top:1px solid var(--line);padding-top:16px;"></div>' : '') +
+      '</div>' +
+      (!isThanks ? '<div class="q-footer">' +
+        '<button class="q-btn q-btn-ghost" id="q-back-btn" ' + (step === 0 ? 'disabled' : '') + '>Back</button>' +
+        '<button class="q-btn q-btn-primary" id="q-next-btn" ' + ((!valid || submitting) ? 'disabled' : '') + '>' +
+        (submitting ? 'Sending…' : (isLastQuestionStep ? 'Send' : 'Next')) +
+        '</button>' +
+        '</div>' : '');
+
+    attachHandlers(isLastQuestionStep);
+
+    if (showResults && !isThanks) loadResults();
+  }
+
+  function attachHandlers(isLastQuestionStep) {
+    const consentBox = document.getElementById('q-consent-box');
+    if (consentBox) consentBox.addEventListener('change', (e) => { answers.consent = e.target.checked; render(); });
+
+    document.querySelectorAll('.q-options').forEach(group => {
+      group.addEventListener('click', (e) => {
+        const opt = e.target.closest('.q-opt');
+        if (!opt) return;
+        answers[group.dataset.field] = opt.dataset.value;
+        render();
+      });
+    });
+
+    document.querySelectorAll('.q-likert-scale').forEach(group => {
+      group.addEventListener('click', (e) => {
+        const btn = e.target.closest('.q-likert-btn');
+        if (!btn) return;
+        answers[group.dataset.field] = parseInt(btn.dataset.value, 10);
+        render();
+      });
+    });
+
+    document.querySelectorAll('input.q-text-input, textarea.q-text-input').forEach(input => {
+      input.addEventListener('input', (e) => { answers[input.dataset.field] = e.target.value; });
+    });
+
+    const backBtn = document.getElementById('q-back-btn');
+    if (backBtn) backBtn.addEventListener('click', () => { if (step > 0) { step--; submitError = ''; render(); } });
+
+    const nextBtn = document.getElementById('q-next-btn');
+    if (nextBtn) nextBtn.addEventListener('click', () => {
+      submitError = '';
+      if (isLastQuestionStep) { submitResponse(); return; }
+      if (step < STEPS.length - 1) { step++; render(); }
+    });
+
+    const toggleBtn = document.getElementById('q-toggle-results-btn');
+    if (toggleBtn) toggleBtn.addEventListener('click', () => { showResults = !showResults; render(); });
+  }
+
+  render();
+})();
+</script>
